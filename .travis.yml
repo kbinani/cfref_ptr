@@ -1,0 +1,12 @@
+language: c++
+os: osx
+
+before_script:
+  - git --version
+  - cmake --version
+  - git submodule update --init --recursive
+
+script:
+  - cmake test
+  - cmake --build .
+  - ./cfref_ptr_test

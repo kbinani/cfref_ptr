@@ -1,6 +1,7 @@
 #pragma once
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <utility> // std::move, std::swap
 
 template<class T>
 class cfref_ptr
@@ -13,9 +14,6 @@ public:
 	cfref_ptr(T obj)
 		: obj_(obj)
 	{
-		if (obj_) {
-			CFRetain(obj_);
-		}
 	}
 
 	~cfref_ptr()
@@ -33,23 +31,26 @@ public:
 		}
 	}
 
-	cfref_ptr(cfref_ptr&& other)
-		: obj_(other.obj_)
+	cfref_ptr(cfref_ptr&& other) noexcept
 	{
-		other.obj_ = NULL;
+		*this = std::move(other);
 	}
 
 	cfref_ptr& operator = (cfref_ptr const& other)
 	{
-		cfref_ptr tmp(other);
-		tmp.swap(*this);
+		if (this != &other) {
+			cfref_ptr tmp(other);
+			tmp.swap(*this);
+		}
 		return *this;
 	}
 
 	cfref_ptr& operator = (cfref_ptr&& other)
 	{
-		obj_ = other.obj_;
-		other.obj_ = NULL;
+		if (this != &other) {
+			obj_ = other.obj_;
+			other.obj_ = NULL;
+		}
 		return *this;
 	}
 
@@ -81,9 +82,6 @@ public:
 			CFRelease(obj_);
 		}
 		obj_ = obj;
-		if (obj_) {
-			CFRetain(obj_);
-		}
 	}
 
 private:
