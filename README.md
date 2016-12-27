@@ -3,6 +3,10 @@ cfref_ptr
 
 RAII for CFTypeRef.
 
+build status
+============
+[![Build Status](https://travis-ci.org/kbinani/cfref_ptr.svg?branch=master)](https://travis-ci.org/kbinani/cfref_ptr)
+
 example
 =======
 
